@@ -1,0 +1,32 @@
+config:
+  target: http://localhost:3000
+  phases:
+    - duration: 300
+      arrivalRate: 20
+      name: sustained
+    - duration: 30
+      arrivalRate: 100
+      rampTo: 500
+      name: spike
+  plugins:
+    expect:
+      - response_time.p90: 200
+      - errors.rate: 0.001
+scenarios:
+  - name: health
+    flow:
+      - get:
+          url: /health
+  - name: contact
+    flow:
+      - post:
+          url: /contact
+          json:
+            name: stress
+            email: stress@example.com
+            message: hi
+  - name: slow
+    flow:
+      - get:
+          url: /health
+          timeout: 2

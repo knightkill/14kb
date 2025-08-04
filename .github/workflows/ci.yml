@@ -1,0 +1,55 @@
+name: ci
+on:
+  push:
+    branches: [main]
+  pull_request:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+      - name: install
+        run: npm ci
+        working-directory: backend
+      - name: lint
+        run: npm run lint
+        working-directory: backend
+      - name: test
+        run: npm test
+        working-directory: backend
+      - name: build
+        run: |
+          npm run build:ui
+          npm run build:api
+        working-directory: backend
+      - name: docker build
+        run: |
+          docker build -t your-registry/14kb-api:latest ./backend
+          docker build -t your-registry/14kb-ui:latest ./frontend
+      - name: docker login
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+      - name: docker push
+        run: |
+          docker push your-registry/14kb-api:latest
+          docker push your-registry/14kb-ui:latest
+      - name: stress test
+        run: npm run stress
+        working-directory: backend
+      - name: deploy
+        uses: appleboy/ssh-action@v0.1.6
+        with:
+          host: ${{ secrets.SWARM_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          script: docker stack deploy --with-registry-auth --prune -c swarm-stack.yml 14kb
