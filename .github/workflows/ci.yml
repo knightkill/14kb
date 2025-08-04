@@ -42,7 +42,7 @@ jobs:
           password: ${{ secrets.REGISTRY_PASSWORD }}
       - name: docker push
         run: |
-          docker push knightkilly/14kb-api:latest
+          docker push knightkill/14kb-api:latest
           docker push knightkill/14kb-ui:latest
       - name: stress test
         run: npm run stress-test
