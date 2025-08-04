@@ -32,8 +32,8 @@ jobs:
         working-directory: backend
       - name: docker build
         run: |
-          docker build -t your-registry/14kb-api:latest ./backend
-          docker build -t your-registry/14kb-ui:latest ./frontend
+          docker build -t knightkill/14kb-api:latest ./backend
+          docker build -t knightkill/14kb-ui:latest ./frontend
       - name: docker login
         uses: docker/login-action@v3
         with:
@@ -42,8 +42,8 @@ jobs:
           password: ${{ secrets.REGISTRY_PASSWORD }}
       - name: docker push
         run: |
-          docker push your-registry/14kb-api:latest
-          docker push your-registry/14kb-ui:latest
+          docker push knightkilly/14kb-api:latest
+          docker push knightkill/14kb-ui:latest
       - name: stress test
         run: npm run stress-test
         working-directory: backend
