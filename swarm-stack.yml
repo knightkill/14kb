@@ -1,7 +1,7 @@
 version: '3.9'
 services:
   api-backend:
-    image: your-registry/14kb-api:latest
+    image: knightkill/14kb-api:latest
     ports:
       - '8080:3000'
     deploy:
@@ -21,7 +21,7 @@ services:
     secrets:
       - api_env
   web-ui:
-    image: your-registry/14kb-ui:latest
+    image: knightkill/14kb-ui:latest
     ports:
       - '80:80'
     deploy:
