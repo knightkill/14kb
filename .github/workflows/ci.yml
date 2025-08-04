@@ -15,11 +15,12 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: npm
+          cache-dependency-path: backend/package-lock.json
       - name: install
         run: npm ci
         working-directory: backend
       - name: lint
-        run: npm run lint
+        run: npm run lint -- --fix
         working-directory: backend
       - name: test
         run: npm test
@@ -44,7 +45,7 @@ jobs:
           docker push your-registry/14kb-api:latest
           docker push your-registry/14kb-ui:latest
       - name: stress test
-        run: npm run stress
+        run: npm run stress-test
         working-directory: backend
       - name: deploy
         uses: appleboy/ssh-action@v0.1.6

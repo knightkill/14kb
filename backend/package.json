@@ -8,7 +8,6 @@
     "build:api": "echo building api",
     "build:ui": "echo building ui",
     "start": "node src/app.js",
-    "stress": "npm run stress-test",
     "stress-test": "node test/stress/run.js"
   },
   "dependencies": {
