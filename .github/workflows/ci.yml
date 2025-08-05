@@ -48,6 +48,7 @@ jobs:
         run: npm run stress-test
         working-directory: backend
       - name: deploy
+        if: ${{ secrets.SWARM_HOST != '' && secrets.SSH_USER != '' && secrets.SSH_KEY != '' }}
         uses: appleboy/ssh-action@v0.1.6
         with:
           host: ${{ secrets.SWARM_HOST }}
