@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en" x-data="{dark:false}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>14KB Portfolio</title>
+  <link rel="stylesheet" href="styles.min.css">
+  <style>
+    body.dark {background:#1a1a1a;color:#eee}
+  </style>
+</head>
+<body :class="{'dark':dark}">
+  <header>
+    <h1>14KB Portfolio</h1>
+    <button @click="dark=!dark">toggle</button>
+  </header>
+  <main>
+    <p>minimal portfolio</p>
+    <form x-data="{name:'',email:'',message:''}" @submit.prevent="fetch('/contact',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,email,message})})">
+      <input placeholder="name" x-model="name">
+      <input placeholder="email" type="email" x-model="email">
+      <textarea placeholder="message" x-model="message"></textarea>
+      <button type="submit">send</button>
+    </form>
+  </main>
+  <footer>
+    <small>&copy; 2024</small>
+  </footer>
+  <script src="alpine.min.js" defer></script>
+</body>
+</html>
