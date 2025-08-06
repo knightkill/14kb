@@ -6,7 +6,7 @@
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
     "lint": "eslint .",
     "build:api": "echo building api",
-    "build:ui": "echo building ui",
+    "build:ui": "esbuild ../frontend/app.js --bundle --minify --outfile=../frontend/app.min.js --external:preact --external:htm --external:htm/preact && node -e \"const fs=require('fs'),z=require('zlib'),p=['../frontend/index.html','../frontend/styles.min.css','../frontend/app.min.js'];const s=z.gzipSync(Buffer.concat(p.map(x=>fs.readFileSync(x)))).length;if(s>14*1024){console.error('UI bundle exceeds 14KB gzip:',s);process.exit(1)}else{console.log('gzip size',s)}\"",
     "start": "node src/app.js",
     "stress-test": "node test/stress/run.js"
   },
@@ -15,14 +15,30 @@
   },
   "devDependencies": {
     "artillery": "^2.0.0",
+    "esbuild": "^0.19.0",
     "eslint": "^8.56.0",
+    "htm": "^3.1.1",
     "jest": "^29.7.0",
-    "supertest": "^6.3.3"
+    "jest-environment-jsdom": "^29.7.0",
+    "preact": "^10.15.1",
+    "supertest": "^6.3.3",
+    "@testing-library/preact": "^3.2.3"
   },
   "eslintConfig": {
     "env": {"node": true, "es2021": true, "jest": true},
     "extends": "eslint:recommended",
     "parserOptions": {"ecmaVersion": "latest", "sourceType": "module"},
     "rules": {"semi": ["error", "never"]}
+  },
+  "jest": {
+    "transform": {},
+    "testEnvironment": "node",
+    "moduleNameMapper": {
+      "^@testing-library/preact$": "<rootDir>/node_modules/@testing-library/preact/dist/cjs/index.js",
+      "^preact$": "<rootDir>/node_modules/preact/dist/preact.js",
+      "^preact/hooks$": "<rootDir>/node_modules/preact/hooks/dist/hooks.js",
+      "^preact/test-utils$": "<rootDir>/node_modules/preact/test-utils/dist/testUtils.js",
+      "^htm$": "<rootDir>/node_modules/htm/dist/htm.js"
+    }
   }
 }
