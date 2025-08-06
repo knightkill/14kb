@@ -1,3 +1,4 @@
+/** @jest-environment node */
 import request from 'supertest'
 import app from '../../src/app.js'
 import { contacts } from '../../src/routes.js'
