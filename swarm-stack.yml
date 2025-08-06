@@ -13,17 +13,12 @@ services:
       update_config:
         parallelism: 1
         delay: 10s
-      healthcheck:
-        test: ['CMD-SHELL', 'curl -f http://localhost:3000/health || exit 1']
-        interval: 15s
-        timeout: 5s
-        retries: 5
     secrets:
       - api_env
   web-ui:
     image: knightkill/14kb-ui:latest
     ports:
-      - '80:80'
+      - '6969:80'
     deploy:
       replicas: 2
       update_config:
