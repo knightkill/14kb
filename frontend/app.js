@@ -16,14 +16,20 @@ export default function App() {
     ['Portfolio', 'Auto-updateable data driven digital copy of you'],
     ['Challenges', 'Where I backlog and solve weird random challenges'],
     ['Jobs Jedi', '(Not yet public) Making Job hunting easy-peasy'],
-    ['Selfathon', 'Selfathon enables scheduling of focused sessions from 8 hours to a week, with real-time progress updates and customized notifications, all within a supportive community framework.'],
+    ['Selfathon',
+      'Selfathon enables scheduling of focused sessions from 8 hours to a week, '
+      + 'with real-time progress updates and customized notifications, all within a supportive community framework.'],
     ['Cover Letter Maker', 'Tool to compose tailored cover letters']
   ]
   const work = [
     ['Atyantik Technologies', 'A company that helps you build your dream product.'],
     ['Tooly', 'A company that helps you exceed your goals with a successful digital transformation.'],
-    ['Syncezy', 'A company that helps you pre-made integrations to automate your business processes or make your own customized integration.'],
-    ['Anormaly', 'Worked under this name for about 25+ small/medium projects before I started working for contract based companies.']
+    ['Syncezy',
+      'A company that helps you pre-made integrations to automate your business processes or '
+      + 'make your own customized integration.'],
+    ['Anormaly',
+      'Worked under this name for about 25+ small/medium projects before I started working '
+      + 'for contract based companies.']
   ]
   return html`<main>
     <h1>Hardip Patel</h1>
