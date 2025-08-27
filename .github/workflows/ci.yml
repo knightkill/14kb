@@ -79,3 +79,38 @@ jobs:
         run: |
           docker push ghcr.io/knightkill/14kb-api:latest
           docker push ghcr.io/knightkill/14kb-ui:latest
+      - name: Deploy to Coolify
+        if: github.ref == 'refs/heads/main'
+        environment: Production
+        run: |
+          echo "Deploying to Coolify..."
+          
+          # Deploy API service
+          echo "Deploying API service to ${{ vars.COOLIFY_API_PREFIX }}.${{ vars.COOLIFY_API_URL }}"
+          curl -X POST "https://${{ vars.COOLIFY_API_URL }}/api/v1/deploy" \
+            -H "Authorization: Bearer ${{ secrets.COOLIFY_API_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "server_uuid": "${{ secrets.COOLIFY_SERVER_UUID }}",
+              "project_name": "${{ secrets.COOLIFY_PROJECT_NAME }}",
+              "application_name": "api",
+              "image": "ghcr.io/knightkill/14kb-api:latest",
+              "domain": "${{ vars.COOLIFY_API_PREFIX }}.${{ vars.COOLIFY_API_URL }}",
+              "port": 3000
+            }'
+          
+          # Deploy UI service
+          echo "Deploying UI service to ${{ vars.COOLIFY_WEB_PREFIX }}.${{ vars.COOLIFY_API_URL }}"
+          curl -X POST "https://${{ vars.COOLIFY_API_URL }}/api/v1/deploy" \
+            -H "Authorization: Bearer ${{ secrets.COOLIFY_API_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "server_uuid": "${{ secrets.COOLIFY_SERVER_UUID }}",
+              "project_name": "${{ secrets.COOLIFY_PROJECT_NAME }}",
+              "application_name": "ui",
+              "image": "ghcr.io/knightkill/14kb-ui:latest", 
+              "domain": "${{ vars.COOLIFY_WEB_PREFIX }}.${{ vars.COOLIFY_API_URL }}",
+              "port": 80
+            }'
+          
+          echo "Deployment completed!"
