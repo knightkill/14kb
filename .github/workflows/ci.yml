@@ -1,0 +1,81 @@
+name: ci
+on:
+  push:
+    branches: [main]
+  pull_request:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+      - name: install
+        run: npm ci
+        working-directory: backend
+      - name: lint
+        run: npm run lint -- --fix
+        working-directory: backend
+      - name: test
+        run: npm test
+        working-directory: backend
+      - name: build
+        run: |
+          npm run build:ui
+          npm run build:api
+        working-directory: backend
+      - name: validate frontend
+        run: |
+          echo "Validating Preact frontend build..."
+          ls -la ../frontend/app.min.js
+          file ../frontend/app.min.js
+        working-directory: backend
+      - name: docker build
+        run: |
+          docker build -t ghcr.io/knightkill/14kb-api:latest \
+            --label "org.opencontainers.image.source=https://github.com/knightkill/14kb" \
+            --label "org.opencontainers.image.description=14KB API Backend" \
+            --label "org.opencontainers.image.licenses=MIT" \
+            ./backend
+          docker build -t ghcr.io/knightkill/14kb-ui:latest \
+            --label "org.opencontainers.image.source=https://github.com/knightkill/14kb" \
+            --label "org.opencontainers.image.description=14KB UI Frontend" \
+            --label "org.opencontainers.image.licenses=MIT" \
+            ./frontend
+      - name: test docker images locally
+        run: |
+          echo "Testing API container..."
+          docker run --rm -d --name test-api -p 3001:3000 ghcr.io/knightkill/14kb-api:latest
+          sleep 5
+          curl -f http://localhost:3001/health || exit 1
+          docker stop test-api
+          echo "Testing UI container..."
+          docker run --rm -d --name test-ui -p 6970:80 ghcr.io/knightkill/14kb-ui:latest
+          echo "Waiting for nginx to start..."
+          sleep 10
+          # Test multiple times with retries
+          for i in {1..5}; do
+            if curl -f http://localhost:6970/; then
+              echo "UI container test passed"
+              break
+            fi
+            echo "Attempt $i failed, retrying..."
+            sleep 2
+          done
+          docker stop test-ui
+      - name: docker login
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+      - name: docker push
+        run: |
+          docker push ghcr.io/knightkill/14kb-api:latest
+          docker push ghcr.io/knightkill/14kb-ui:latest

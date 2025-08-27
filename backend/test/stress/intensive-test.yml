@@ -1,0 +1,42 @@
+config:
+  target: http://localhost:8080
+  phases:
+    - duration: 30
+      arrivalRate: 50
+      name: ramp-up
+    - duration: 60
+      arrivalRate: 200
+      name: high-load
+  plugins:
+    expect:
+      - response_time.p90: 500
+      - errors.rate: 0.01
+scenarios:
+  - name: intensive-health
+    weight: 30
+    flow:
+      - get:
+          url: /health
+  - name: intensive-contact
+    weight: 50
+    flow:
+      - post:
+          url: /contact
+          json:
+            name: intensive-test
+            email: intensive@test.com
+            message: high load testing
+  - name: intensive-mixed
+    weight: 20
+    flow:
+      - loop:
+          - get:
+              url: /health
+          - think: 1
+          - post:
+              url: /contact
+              json:
+                name: mixed-test
+                email: mixed@test.com  
+                message: mixed workload
+        count: 3
