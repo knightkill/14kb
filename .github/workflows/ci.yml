@@ -81,6 +81,7 @@ jobs:
           docker push ghcr.io/knightkill/14kb-ui:latest
       - name: Deploy to Coolify
         if: github.ref == 'refs/heads/main'
+        environment: Production
         run: |
           echo "Deploying to Coolify..."
           
